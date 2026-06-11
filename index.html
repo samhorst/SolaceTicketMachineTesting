@@ -189,7 +189,7 @@
     .btn-default { background: var(--true-white); color: var(--funnel-page); border: 1.5px solid var(--funnel-page); }
     .btn-default:not(:disabled):hover { background: var(--green-100); }
 
-    .btn-primary { background: var(--funnel-cta); color: var(--true-white); border: 1.5px solid var(--funnel-cta); }
+    .btn-primary { background: #2A5E51; color: var(--true-white); border: 1.5px solid #2A5E51; border-radius: 12px; }
     .btn-primary:not(:disabled):hover { background: var(--funnel-page); border-color: var(--funnel-page); }
 
     .btn-secondary { background: var(--green-200); color: var(--funnel-page); border: 1.5px solid var(--green-400); }
@@ -1520,22 +1520,22 @@
 
       const col = cat ? CAT_COLORS[cat] : null;
 
-      const Pill = () => col && (
+      const Pill = () => cat && (
         <span style={{
           display:"inline-flex",
           alignItems:"center",
-          gap:8,
+          gap:7,
           padding:"6px 14px",
           borderRadius:"999px",
           fontSize:"var(--fs-sm)",
           fontWeight:700,
           marginBottom:"1.5rem",
-          background:col.bg,
-          color:col.text,
-          border:`1.5px solid ${col.border}`,
+          background:CAT_COLORS["Phone Call"].bg,
+          color:CAT_COLORS["Phone Call"].text,
+          border:`1.5px solid ${CAT_COLORS["Phone Call"].border}`,
           letterSpacing:"0.01em",
         }}>
-          <span aria-hidden="true" style={{width:7,height:7,borderRadius:"50%",background:"currentColor",opacity:0.55,flexShrink:0}}/>
+          {CAT_ICONS[cat] && React.cloneElement(CAT_ICONS[cat], { width: 15, height: 15 })}
           {cat}
         </span>
       );
@@ -1662,17 +1662,16 @@
             {/* SCREEN: Category */}
             {screen === "category" && (
               <section key="category" className="screen card" aria-labelledby="screen-category">
-                <StepLabel>Step 1</StepLabel>
                 <h1 id="screen-category" style={{
                   fontSize:36,
                   fontWeight:600,
                   fontFamily:"var(--font-display)",
                   color:"var(--funnel-page)",
-                  margin:"0 0 8px 0",
+                  margin:0,
                   letterSpacing:"0.002em",
                   lineHeight:1.15,
                 }}>What type of issue is this?</h1>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))",gap:12,marginTop:24}}>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))",gap:12,marginTop:22}}>
                   {CATEGORIES.map(c => (
                     <button key={c} onClick={() => startCat(c)} className="cat-tile">
                       {CAT_ICONS[c]}
