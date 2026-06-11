@@ -6,7 +6,7 @@
   <title>Solace CX Ticket Decision Tree</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Lato:wght@400;500;700;900&display=swap" rel="stylesheet">
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -78,6 +78,7 @@
 
       /* Typography */
       --font-body: 'Lato', system-ui, -apple-system, sans-serif;
+      --font-display: 'Cormorant Garamond', 'Hoefler Text', Garamond, Georgia, serif;
       --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
       /* Sizing — bumped up for accessibility */
@@ -93,13 +94,17 @@
       --radius-sm: 6px;
       --radius-md: 10px;
       --radius-lg: 14px;
-      --radius-xl: 20px;
+      --radius-xl: 22px;
 
       /* Shadows */
-      --shadow-sm: 0 1px 2px rgba(29, 67, 57, 0.06);
-      --shadow-md: 0 4px 12px rgba(29, 67, 57, 0.08);
-      --shadow-lg: 0 18px 40px rgba(29, 67, 57, 0.18);
+      --shadow-sm: 0 1px 2px rgba(29, 67, 57, 0.05);
+      --shadow-md: 0 6px 18px rgba(29, 67, 57, 0.09);
+      --shadow-lg: 0 22px 48px rgba(29, 67, 57, 0.16);
+      --shadow-card: 0 1px 2px rgba(29, 67, 57, 0.04), 0 12px 32px rgba(29, 67, 57, 0.07);
       --shadow-focus: 0 0 0 3px rgba(63, 147, 124, 0.35);
+
+      /* Gold accent thread — Solace secondary palette gradient */
+      --gold-thread: linear-gradient(90deg, var(--chamois) 0%, var(--solara) 50%, var(--chamois) 100%);
     }
 
     * { box-sizing: border-box; }
@@ -121,11 +126,134 @@
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(circle at 100% 0%, rgba(63, 147, 124, 0.04) 0%, transparent 40%),
-        radial-gradient(circle at 0% 100%, rgba(215, 161, 59, 0.03) 0%, transparent 40%);
+        radial-gradient(ellipse 80% 60% at 85% -10%, rgba(63, 147, 124, 0.06) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 50% at 8% 108%, rgba(215, 161, 59, 0.05) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(190, 211, 204, 0.04) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
     }
+
+    /* ============================================================
+       VISUAL LAYER — chrome classes
+       ============================================================ */
+
+    /* Screen transitions — one orchestrated moment per step change */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .screen { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+    /* Content card — floats over the eggshell page */
+    .card {
+      background: var(--surface-card);
+      border: 1px solid rgba(238, 236, 235, 0.9);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-card);
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    /* Buttons — variant colors + hover states live here so :hover works */
+    .btn {
+      padding: 12px 22px;
+      border-radius: var(--radius-md);
+      font-size: var(--fs-base);
+      font-family: var(--font-body);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      min-height: 48px;
+      transition: transform 0.12s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+    .btn:disabled { cursor: not-allowed; opacity: 0.55; }
+    .btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn:not(:disabled):active { transform: translateY(1px); box-shadow: none; }
+
+    .btn-default { background: var(--surface-card); color: var(--text-primary); border: 1.5px solid var(--border-default); }
+    .btn-default:not(:disabled):hover { border-color: var(--green-500); background: var(--green-100); }
+
+    .btn-primary { background: var(--green-900); color: var(--eggshell); border: 1.5px solid var(--green-900); }
+    .btn-primary:not(:disabled):hover { background: var(--green-800); border-color: var(--green-800); }
+
+    .btn-secondary { background: var(--green-200); color: var(--green-900); border: 1.5px solid var(--green-400); }
+    .btn-secondary:not(:disabled):hover { background: var(--green-100); }
+
+    .btn-ghost { background: transparent; color: var(--text-secondary); border: 1.5px solid transparent; }
+    .btn-ghost:not(:disabled):hover { background: var(--surface-sunken); box-shadow: none; }
+
+    .btn-danger { background: var(--surface-card); color: var(--danger-strong); border: 1.5px solid var(--danger-border); }
+
+    /* Category tiles — the signature moment */
+    .cat-tile {
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      border-radius: var(--radius-lg);
+      padding: 22px 20px;
+      min-height: 104px;
+      font-size: var(--fs-md);
+      font-weight: 700;
+      font-family: var(--font-body);
+      cursor: pointer;
+      display: flex;
+      align-items: flex-end;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+    }
+    .cat-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .cat-tile:active { transform: translateY(0); }
+    .cat-tile .ghost {
+      position: absolute;
+      top: -0.28em;
+      right: 0.02em;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 108px;
+      line-height: 1;
+      opacity: 0.13;
+      pointer-events: none;
+      user-select: none;
+      transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cat-tile:hover .ghost { opacity: 0.22; transform: translateY(-2px); }
+
+    /* Custom checkbox — checklist */
+    .check-input {
+      position: absolute;
+      opacity: 0;
+      width: 26px;
+      height: 26px;
+      margin: 0;
+      cursor: pointer;
+    }
+    .check-box {
+      width: 26px;
+      height: 26px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      border: 2px solid var(--border-strong);
+      background: var(--surface-card);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+      pointer-events: none;
+    }
+    .check-box svg { opacity: 0; transform: scale(0.5); transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .check-input:checked + .check-box { background: var(--green-700); border-color: var(--green-700); }
+    .check-input:checked + .check-box svg { opacity: 1; transform: scale(1); }
+    .check-input:focus-visible + .check-box { box-shadow: var(--shadow-focus); border-color: var(--green-600); }
+    .check-input:hover:not(:checked) + .check-box { border-color: var(--green-600); }
+
+    /* Ticket preview scrollbar */
+    .ticket-preview::-webkit-scrollbar { width: 10px; }
+    .ticket-preview::-webkit-scrollbar-track { background: transparent; }
+    .ticket-preview::-webkit-scrollbar-thumb {
+      background: var(--green-400);
+      border-radius: 5px;
+      border: 2px solid var(--surface-sunken);
+    }
+    .ticket-preview::-webkit-scrollbar-thumb:hover { background: var(--green-500); }
 
     /* Universal focus state — keyboard accessibility */
     button:focus-visible,
@@ -778,49 +906,22 @@
        ============================================================ */
     const baseInput = {
       width: "100%",
-      padding: "12px 14px",
+      padding: "13px 15px",
       border: "1.5px solid var(--border-default)",
       borderRadius: "var(--radius-md)",
       fontSize: "var(--fs-base)",
       fontFamily: "var(--font-body)",
       color: "var(--text-primary)",
-      background: "var(--surface-card)",
+      background: "var(--eggshell)",
       boxSizing: "border-box",
       outline: "none",
-      transition: "border-color 0.15s ease, box-shadow 0.15s ease",
+      transition: "border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease",
     };
 
     /* ============================================================
        BUTTON — primary brand button
        ============================================================ */
     const Button = React.forwardRef(function Button({ children, onClick, variant = "default", disabled, type, style = {}, ariaLabel }, ref) {
-      const variants = {
-        default: {
-          background: "var(--surface-card)",
-          color: "var(--text-primary)",
-          border: "1.5px solid var(--border-default)",
-        },
-        primary: {
-          background: "var(--green-900)",
-          color: "var(--eggshell)",
-          border: "1.5px solid var(--green-900)",
-        },
-        secondary: {
-          background: "var(--green-200)",
-          color: "var(--green-900)",
-          border: "1.5px solid var(--green-400)",
-        },
-        ghost: {
-          background: "transparent",
-          color: "var(--text-secondary)",
-          border: "1.5px solid transparent",
-        },
-        danger: {
-          background: "var(--surface-card)",
-          color: "var(--danger-strong)",
-          border: "1.5px solid var(--danger-border)",
-        },
-      };
       return (
         <button
           ref={ref}
@@ -828,22 +929,8 @@
           onClick={onClick}
           disabled={disabled}
           aria-label={ariaLabel}
-          style={{
-            padding: "12px 22px",
-            borderRadius: "var(--radius-md)",
-            fontSize: "var(--fs-base)",
-            fontFamily: "var(--font-body)",
-            fontWeight: 700,
-            cursor: disabled ? "not-allowed" : "pointer",
-            opacity: disabled ? 0.55 : 1,
-            transition: "transform 0.06s ease, box-shadow 0.15s ease, background-color 0.15s ease",
-            minHeight: 48,
-            ...variants[variant],
-            ...style,
-          }}
-          onMouseDown={e => { if (!disabled) e.currentTarget.style.transform = "translateY(1px)"; }}
-          onMouseUp={e => { e.currentTarget.style.transform = "translateY(0)"; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
+          className={`btn btn-${variant}`}
+          style={style}
         >
           {children}
         </button>
@@ -1012,7 +1099,7 @@
       const handleFile = f => {
         if(!f) return;
         const r = new FileReader();
-        r.onload = e => onChange({text:`[Screenshot: ${f.name}]`, dataUrl:e.target.result, name:f.name});
+        r.onload = e => onChange({dataUrl:e.target.result, name:f.name});
         r.readAsDataURL(f);
       };
       return (
@@ -1109,6 +1196,9 @@
       const [guidanceKey, setGuidanceKey] = useState(null);
       const [copyError, setCopyError] = useState(false);
       const [copied, setCopied]       = useState(false);
+      const [titleCopied, setTitleCopied] = useState(false);
+      const [titleCopyError, setTitleCopyError] = useState(false);
+      const [shotCopied, setShotCopied] = useState({}); // { [index]: "copied" | "failed" }
 
       const tree = cat ? TREES[cat] : [];
       const visibleBranches = tree.filter(b => !b.showIf || b.showIf(answers));
@@ -1236,8 +1326,8 @@
         return v.text || "";
       }
 
-      function buildTicket() {
-        if (!ep) return "";
+      function buildTicketSections() {
+        if (!ep) return null;
         const escText = Object.fromEntries(ep.escalate.map(f => [f.key, getEscText(f.key)]));
         const tsResults = (ep.troubleshoot || []).map(step => {
           const s = tsState[step.id] || { satisfied: false, reason: "" };
@@ -1257,13 +1347,33 @@
             const v = getEscText(f.key);
             return v || (f.type === "screenshot" && escVals[f.key]?.dataUrl);
           })
-          .map(f => `${f.label}\n→ ${getEscText(f.key) || (escVals[f.key]?.dataUrl ? `[Screenshot: ${escVals[f.key].name}]` : "—")}`)
+          .map(f => {
+            const text = getEscText(f.key);
+            if (text) return `${f.label}\n→ ${text}`;
+            if (escVals[f.key]?.dataUrl) return `${f.label}\n[attach image here]`;
+            return `${f.label}\n→ —`;
+          })
           .join("\n\n") || "(no fields filled in)";
         const extras = (escVals.__extraShots || []).filter(s => s?.dataUrl);
         const extraLog = extras.length > 0
-          ? `\n\nScreenshots\n→ ${extras.map(s => `[Screenshot: ${s.name}]`).join(", ")}`
+          ? `\n\nScreenshots\n${extras.map(() => `[attach image here]`).join("\n")}`
           : "";
-        return `## Summary\n\n${summary}\n\n---\n\n## Decision Path\n\n${branchLog || "(none)"}\n\n---\n\n## Troubleshooting Info\n\n${tsLog}\n\n---\n\n## Ticket Details\n\n${escLog}${extraLog}`;
+        return { summary, branchLog, tsLog, escLog, extraLog };
+      }
+
+      // Full ticket — used for the in-app preview so CX can see what's going where.
+      function buildTicket() {
+        const s = buildTicketSections();
+        if (!s) return "";
+        return `## Summary\n\n${s.summary}\n\n---\n\n## Decision Path\n\n${s.branchLog || "(none)"}\n\n---\n\n## Troubleshooting Info\n\n${s.tsLog}\n\n---\n\n## Ticket Details\n\n${s.escLog}${s.extraLog}`;
+      }
+
+      // Clipboard body — matches the in-app preview. Includes Summary but NOT the Title;
+      // the title gets its own copy field above so it can be pasted into Linear's title input.
+      function buildClipboardBody() {
+        const s = buildTicketSections();
+        if (!s) return "";
+        return `## Summary\n\n${s.summary}\n\n---\n\n## Decision Path\n\n${s.branchLog || "(none)"}\n\n---\n\n## Troubleshooting Info\n\n${s.tsLog}\n\n---\n\n## Ticket Details\n\n${s.escLog}${s.extraLog}`;
       }
 
       function getTitle() {
@@ -1274,14 +1384,26 @@
         return ep.title(escText);
       }
 
+      function copyTitle() {
+        copyToClipboard(getTitle(),
+          () => { setTitleCopied(true); setTitleCopyError(false); setTimeout(() => setTitleCopied(false), 2000); },
+          () => { setTitleCopyError(true); setTimeout(() => setTitleCopyError(false), 4000); }
+        );
+      }
+
       function copyTicket() {
-        const text = `Title: ${getTitle()}\n\n${buildTicket()}`;
-        const success = () => { setCopied(true); setCopyError(false); setTimeout(() => setCopied(false), 2000); };
-        const failure = () => { setCopyError(true); setTimeout(() => setCopyError(false), 4000); };
+        const text = buildClipboardBody();
+        copyToClipboard(text,
+          () => { setCopied(true); setCopyError(false); setTimeout(() => setCopied(false), 2000); },
+          () => { setCopyError(true); setTimeout(() => setCopyError(false), 4000); }
+        );
+      }
+
+      function copyToClipboard(text, onSuccess, onFailure) {
         if (navigator.clipboard && window.isSecureContext) {
-          navigator.clipboard.writeText(text).then(success).catch(() => fallbackCopy(text, success, failure));
+          navigator.clipboard.writeText(text).then(onSuccess).catch(() => fallbackCopy(text, onSuccess, onFailure));
         } else {
-          fallbackCopy(text, success, failure);
+          fallbackCopy(text, onSuccess, onFailure);
         }
       }
 
@@ -1300,7 +1422,42 @@
         } catch (e) { onFailure(); }
       }
 
-      function reset() { setScreen("category"); setCat(null); setAnswers({}); setBranchIdx(0); setTsState({}); setTsError(null); setEscVals({}); setGuidanceKey(null); }
+      // Copy an image (data URL) to the clipboard as PNG.
+      // The Clipboard API only accepts a narrow set of MIME types — PNG is the only
+      // widely-supported image type — so non-PNG sources are re-encoded via canvas first.
+      async function copyImageToClipboard(dataUrl, idx) {
+        const markCopied = () => {
+          setShotCopied(prev => ({...prev, [idx]: "copied"}));
+          setTimeout(() => setShotCopied(prev => { const next = {...prev}; delete next[idx]; return next; }), 2000);
+        };
+        const markFailed = () => {
+          setShotCopied(prev => ({...prev, [idx]: "failed"}));
+          setTimeout(() => setShotCopied(prev => { const next = {...prev}; delete next[idx]; return next; }), 4000);
+        };
+
+        if (!navigator.clipboard || !window.ClipboardItem || !window.isSecureContext) {
+          markFailed();
+          return;
+        }
+        try {
+          // Decode the data URL into a Blob, then re-encode as PNG to satisfy the Clipboard API.
+          const img = new Image();
+          img.src = dataUrl;
+          await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          const blob = await new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error("blob-failed")), "image/png"));
+          await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+          markCopied();
+        } catch (e) {
+          markFailed();
+        }
+      }
+
+      function reset() { setScreen("category"); setCat(null); setAnswers({}); setBranchIdx(0); setTsState({}); setTsError(null); setEscVals({}); setGuidanceKey(null); setCopied(false); setCopyError(false); setTitleCopied(false); setTitleCopyError(false); setShotCopied({}); }
 
       const hasTroubleshoot = (ep?.troubleshoot.length || 0) > 0;
       const totalSteps = visibleBranches.length + (hasTroubleshoot ? 1 : 0) + 1;
@@ -1317,6 +1474,7 @@
         <span style={{
           display:"inline-flex",
           alignItems:"center",
+          gap:8,
           padding:"6px 14px",
           borderRadius:"999px",
           fontSize:"var(--fs-sm)",
@@ -1326,7 +1484,10 @@
           color:col.text,
           border:`1.5px solid ${col.border}`,
           letterSpacing:"0.01em",
-        }}>{cat}</span>
+        }}>
+          <span aria-hidden="true" style={{width:7,height:7,borderRadius:"50%",background:"currentColor",opacity:0.55,flexShrink:0}}/>
+          {cat}
+        </span>
       );
 
       const BackBtn = () => (
@@ -1351,23 +1512,24 @@
 
       const StepLabel = ({ children }) => (
         <div style={{
-          fontSize:"var(--fs-xs)",
+          fontSize:12,
           fontWeight:900,
           textTransform:"uppercase",
-          letterSpacing:"0.08em",
-          color:"var(--green-700)",
+          letterSpacing:"0.13em",
+          color:"var(--green-600)",
           marginBottom:10,
         }}>{children}</div>
       );
 
       const Question = ({ children }) => (
         <h2 style={{
-          fontSize:"var(--fs-xl)",
-          fontWeight:700,
-          color:"var(--text-primary)",
-          lineHeight:1.35,
+          fontSize:30,
+          fontWeight:600,
+          fontFamily:"var(--font-display)",
+          color:"var(--green-900)",
+          lineHeight:1.22,
           margin:"0 0 16px 0",
-          letterSpacing:"-0.01em",
+          letterSpacing:"0.002em",
         }}>{children}</h2>
       );
 
@@ -1375,56 +1537,82 @@
         <div style={{
           fontSize:"var(--fs-base)",
           color:"var(--text-secondary)",
-          marginBottom:20,
-          lineHeight:1.6,
+          marginBottom:22,
+          lineHeight:1.65,
         }}>{children}</div>
       );
 
       return (
         <div style={{position:"relative",minHeight:"100vh",zIndex:1}}>
 
-          {/* Header bar */}
+          {/* Header bar — translucent with gold accent thread */}
           <header style={{
-            background:"var(--surface-card)",
-            borderBottom:"1.5px solid var(--border-subtle)",
-            padding:"16px 24px",
+            background:"rgba(255, 253, 250, 0.85)",
+            backdropFilter:"blur(12px)",
+            WebkitBackdropFilter:"blur(12px)",
+            padding:"14px 24px",
             position:"sticky",
             top:0,
             zIndex:30,
-            boxShadow:"var(--shadow-sm)",
           }}>
-            <div style={{maxWidth:680,margin:"0 auto",display:"flex",alignItems:"center",gap:12}}>
-              {/* Solace mark — minimal SVG, brand green */}
+            <div style={{maxWidth:720,margin:"0 auto",display:"flex",alignItems:"center",gap:14}}>
+              {/* Solace logomark — solid green circle with white serif S */}
               <div style={{
-                width:32, height:32,
+                width:38, height:38,
                 borderRadius:"50%",
-                background:"linear-gradient(135deg, var(--green-700) 0%, var(--green-900) 100%)",
+                background:"var(--green-900)",
                 display:"flex",
                 alignItems:"center",
                 justifyContent:"center",
-                color:"var(--eggshell)",
-                fontWeight:900,
-                fontSize:14,
-                fontFamily:"Georgia, 'Times New Roman', serif",
-                letterSpacing:"-0.02em",
+                color:"var(--true-white)",
+                fontWeight:500,
+                fontSize:25,
+                fontFamily:"var(--font-display)",
+                lineHeight:1,
+                paddingBottom:2, // optical centering — serif S sits slightly low without this
+                flexShrink:0,
+                boxShadow:"0 2px 8px rgba(29,67,57,0.22)",
               }}>S</div>
-              <div style={{lineHeight:1.2}}>
-                <div style={{fontSize:"var(--fs-md)",fontWeight:900,color:"var(--green-900)",letterSpacing:"-0.01em"}}>Solace · CX Ticket Builder</div>
-                <div style={{fontSize:"var(--fs-xs)",color:"var(--text-tertiary)",fontWeight:500}}>Communications Issues — Decision Tree</div>
+              <div style={{lineHeight:1.15}}>
+                <div style={{
+                  fontSize:21,
+                  fontWeight:600,
+                  color:"var(--green-900)",
+                  fontFamily:"var(--font-display)",
+                  letterSpacing:"0.005em",
+                }}>Solace <span style={{color:"var(--green-500)",fontWeight:500,margin:"0 2px"}}>·</span> CX Ticket Builder</div>
+                <div style={{
+                  fontSize:11,
+                  color:"var(--text-tertiary)",
+                  fontWeight:700,
+                  fontFamily:"var(--font-body)",
+                  textTransform:"uppercase",
+                  letterSpacing:"0.14em",
+                  marginTop:2,
+                }}>Communications · Decision Tree</div>
               </div>
             </div>
+            {/* Gold accent hairline */}
+            <div aria-hidden="true" style={{
+              position:"absolute",
+              left:0, right:0, bottom:0,
+              height:2,
+              background:"var(--gold-thread)",
+              opacity:0.7,
+            }}/>
           </header>
 
-          <main style={{maxWidth:680,margin:"0 auto",padding:"1.75rem 1.25rem 7rem"}}>
+          <main style={{maxWidth:720,margin:"0 auto",padding:"2rem 1.25rem 7.5rem"}}>
 
             {/* Progress bar */}
-            <div role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Ticket progress" style={{height:6,background:"var(--marble)",borderRadius:3,marginBottom:"2rem",overflow:"hidden"}}>
+            <div role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Ticket progress" style={{height:5,background:"var(--marble)",borderRadius:3,marginBottom:"1.75rem",overflow:"visible"}}>
               <div style={{
                 height:"100%",
                 background:"linear-gradient(90deg, var(--green-600) 0%, var(--green-800) 100%)",
                 borderRadius:3,
                 width:`${progress}%`,
-                transition:"width 0.35s ease",
+                transition:"width 0.45s cubic-bezier(0.16, 1, 0.3, 1)",
+                boxShadow:"0 0 8px rgba(63, 147, 124, 0.45)",
               }}/>
             </div>
 
@@ -1432,56 +1620,51 @@
             <div role="alert" aria-live="polite" style={{
               position:"fixed",
               bottom:0,left:0,right:0,
-              background:"var(--warning-bg)",
-              borderTop:"2px solid var(--warning-strong)",
-              padding:"12px 20px",
+              background:"rgba(255, 247, 233, 0.92)",
+              backdropFilter:"blur(10px)",
+              WebkitBackdropFilter:"blur(10px)",
+              borderTop:"1.5px solid var(--chamois)",
+              padding:"11px 20px",
               textAlign:"center",
               fontSize:"var(--fs-sm)",
               color:"var(--warning-text)",
               fontWeight:700,
+              letterSpacing:"0.02em",
               zIndex:50,
-              boxShadow:"0 -2px 8px rgba(29,67,57,0.08)",
             }}>
               ⚠️ Do not enter PHI · Reference patients by ID only
             </div>
 
             {/* SCREEN: Category */}
             {screen === "category" && (
-              <section aria-labelledby="screen-category">
+              <section key="category" className="screen card" aria-labelledby="screen-category">
                 <StepLabel>Step 1</StepLabel>
                 <h1 id="screen-category" style={{
-                  fontSize:"var(--fs-2xl)",
-                  fontWeight:900,
+                  fontSize:36,
+                  fontWeight:600,
+                  fontFamily:"var(--font-display)",
                   color:"var(--green-900)",
                   margin:"0 0 8px 0",
-                  letterSpacing:"-0.02em",
-                  lineHeight:1.2,
+                  letterSpacing:"0.002em",
+                  lineHeight:1.15,
                 }}>What type of issue is this?</h1>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(180px, 1fr))",gap:12,marginTop:20}}>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(190px, 1fr))",gap:14,marginTop:24}}>
                   {CATEGORIES.map(c => {
                     const cc = CAT_COLORS[c];
                     return (
                       <button
                         key={c}
                         onClick={() => startCat(c)}
+                        className="cat-tile"
                         style={{
-                          padding:"20px 18px",
-                          textAlign:"left",
                           border:`1.5px solid ${cc.border}`,
-                          borderRadius:"var(--radius-md)",
                           background:cc.bg,
                           color:cc.text,
-                          fontSize:"var(--fs-md)",
-                          fontWeight:700,
-                          cursor:"pointer",
-                          fontFamily:"var(--font-body)",
-                          transition:"transform 0.1s ease, box-shadow 0.15s ease",
-                          minHeight:64,
-                          boxShadow:"var(--shadow-sm)",
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "var(--shadow-md)"; }}
-                        onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "var(--shadow-sm)"; }}
-                      >{c}</button>
+                      >
+                        <span className="ghost" aria-hidden="true">{c[0]}</span>
+                        {c}
+                      </button>
                     );
                   })}
                 </div>
@@ -1490,7 +1673,7 @@
 
             {/* SCREEN: Branch question */}
             {screen === "branch" && visibleBranches[branchIdx] && (
-              <section aria-live="polite">
+              <section key={`branch-${branchIdx}`} className="screen card" aria-live="polite">
                 <BackBtn />
                 <Pill />
                 <StepLabel>Question {branchIdx + 1} of {visibleBranches.length}</StepLabel>
@@ -1508,7 +1691,7 @@
             {screen === "guidance" && guidanceKey && GUIDANCE[guidanceKey] && (() => {
               const g = GUIDANCE[guidanceKey];
               return (
-                <section aria-live="polite">
+                <section key="guidance" className="screen card" aria-live="polite">
                   <BackBtn />
                   <Pill />
                   <div style={{
@@ -1555,7 +1738,7 @@
 
             {/* SCREEN: Troubleshoot — checklist */}
             {screen === "troubleshoot" && ep && (
-              <section>
+              <section key="troubleshoot" className="screen card">
                 <BackBtn />
                 <Pill />
                 {ep.userError && <UserErrorBanner note={ep.userErrorNote} />}
@@ -1574,26 +1757,27 @@
                           : s.satisfied
                             ? "1.5px solid var(--green-400)"
                             : "1.5px solid var(--border-subtle)",
-                        borderRadius:"var(--radius-md)",
-                        padding:"14px 16px",
-                        background: s.satisfied ? "var(--green-200)" : "var(--surface-card)",
-                        transition:"background-color 0.15s ease, border-color 0.15s ease",
+                        borderRadius:"var(--radius-lg)",
+                        padding:"16px 18px",
+                        background: s.satisfied ? "var(--green-100)" : "var(--surface-sunken)",
+                        boxShadow: s.satisfied ? "none" : "var(--shadow-sm)",
+                        transition:"background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease",
                       }}>
-                        <label style={{display:"flex",alignItems:"flex-start",gap:12,cursor:"pointer"}}>
-                          <input
-                            type="checkbox"
-                            checked={s.satisfied}
-                            onChange={() => toggleStep(step.id)}
-                            style={{
-                              width:22,
-                              height:22,
-                              marginTop:2,
-                              cursor:"pointer",
-                              accentColor:"var(--green-700)",
-                              flexShrink:0,
-                            }}
-                            aria-describedby={`step-warn-${step.id}`}
-                          />
+                        <label style={{display:"flex",alignItems:"flex-start",gap:14,cursor:"pointer",position:"relative"}}>
+                          <span style={{position:"relative",display:"inline-flex",marginTop:1,flexShrink:0}}>
+                            <input
+                              type="checkbox"
+                              className="check-input"
+                              checked={s.satisfied}
+                              onChange={() => toggleStep(step.id)}
+                              aria-describedby={`step-warn-${step.id}`}
+                            />
+                            <span className="check-box" aria-hidden="true">
+                              <svg width="14" height="11" viewBox="0 0 14 11" fill="none">
+                                <path d="M1.5 5.5L5 9L12.5 1.5" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </span>
+                          </span>
                           <div style={{flex:1}}>
                             <div style={{
                               fontSize:"var(--fs-base)",
@@ -1601,21 +1785,23 @@
                               color:"var(--text-primary)",
                               lineHeight:1.45,
                               textDecoration: s.satisfied ? "line-through" : "none",
-                              opacity: s.satisfied ? 0.7 : 1,
+                              textDecorationColor: s.satisfied ? "var(--green-500)" : undefined,
+                              opacity: s.satisfied ? 0.65 : 1,
+                              transition:"opacity 0.25s ease",
                             }}>{step.q}</div>
                             {!s.satisfied && step.warning && (
                               <div id={`step-warn-${step.id}`} style={{
                                 fontSize:"var(--fs-sm)",
                                 color:"var(--text-secondary)",
                                 marginTop:6,
-                                lineHeight:1.5,
+                                lineHeight:1.55,
                                 fontStyle:"italic",
                               }}>{step.warning}</div>
                             )}
                           </div>
                         </label>
                         {!s.satisfied && (
-                          <div style={{marginTop:10,paddingLeft:34}}>
+                          <div style={{marginTop:12,paddingLeft:40}}>
                             <label htmlFor={`reason-${step.id}`} style={{
                               fontSize:"var(--fs-sm)",
                               fontWeight:700,
@@ -1663,10 +1849,10 @@
 
             {/* SCREEN: Escalate / form */}
             {screen === "escalate" && ep && (
-              <section>
+              <section key="escalate" className="screen card">
                 <BackBtn />
                 <Pill />
-                <h2 style={{fontSize:"var(--fs-xl)",fontWeight:900,color:"var(--green-900)",margin:"0 0 6px 0",letterSpacing:"-0.01em",lineHeight:1.25}}>Ticket details</h2>
+                <h2 style={{fontSize:30,fontWeight:600,fontFamily:"var(--font-display)",color:"var(--green-900)",margin:"0 0 6px 0",letterSpacing:"0.002em",lineHeight:1.22}}>Ticket details</h2>
                 <Hint>Fill in what the guide requires for this issue type. All fields optional.</Hint>
 
                 <div style={{marginBottom:20}}>
@@ -1754,49 +1940,72 @@
 
             {/* SCREEN: Done */}
             {screen === "done" && ep && (
-              <section aria-live="polite">
-                <div style={{marginBottom:"1.25rem"}}>
-                  <div style={{
-                    display:"inline-flex",
-                    alignItems:"center",
-                    gap:8,
-                    padding:"6px 14px",
-                    borderRadius:"999px",
-                    background:"var(--green-200)",
-                    color:"var(--green-900)",
-                    border:"1.5px solid var(--green-400)",
-                    fontSize:"var(--fs-sm)",
-                    fontWeight:700,
-                    marginBottom:12,
-                  }}>✓ Ticket ready</div>
-                  <div style={{fontSize:"var(--fs-base)",color:"var(--text-secondary)",lineHeight:1.6}}>
-                    Title: <strong style={{color:"var(--text-primary)",fontWeight:900}}>{getTitle()}</strong>
-                  </div>
-                  <div style={{fontSize:"var(--fs-sm)",color:"var(--text-tertiary)",marginTop:4}}>Paste into the Linear description.</div>
-                </div>
-
+              <section key="done" className="screen card" aria-live="polite">
                 <div style={{
-                  background:"var(--surface-sunken)",
-                  borderRadius:"var(--radius-lg)",
-                  border:"1.5px solid var(--border-subtle)",
-                  padding:"1.5rem",
-                  fontFamily:"var(--font-mono)",
+                  display:"inline-flex",
+                  alignItems:"center",
+                  gap:8,
+                  padding:"6px 14px",
+                  borderRadius:"999px",
+                  background:"var(--green-200)",
+                  color:"var(--green-900)",
+                  border:"1.5px solid var(--green-400)",
                   fontSize:"var(--fs-sm)",
-                  color:"var(--text-primary)",
-                  whiteSpace:"pre-wrap",
-                  lineHeight:1.7,
-                  maxHeight:440,
-                  overflowY:"auto",
-                  boxShadow:"inset 0 1px 0 rgba(255,255,255,0.5)",
-                }}>
-                  {buildTicket()}
+                  fontWeight:700,
+                  marginBottom:18,
+                }}>✓ Ticket ready</div>
+
+                <div style={{fontSize:"var(--fs-sm)",color:"var(--text-secondary)",lineHeight:1.6,marginBottom:24}}>
+                  Copy the title into Linear's title field, then copy the body into Linear's description.
                 </div>
 
-                <div style={{display:"flex",gap:10,marginTop:16,flexWrap:"wrap",alignItems:"center"}}>
+                {/* Title — separate, copyable */}
+                <div style={{marginBottom:24}}>
+                  <label htmlFor="final-title" style={{display:"block",fontSize:"var(--fs-base)",fontWeight:700,color:"var(--text-primary)",marginBottom:6}}>Linear ticket title</label>
+                  <div style={{display:"flex",gap:8,alignItems:"stretch",flexWrap:"wrap"}}>
+                    <input
+                      id="final-title"
+                      type="text"
+                      readOnly
+                      value={getTitle()}
+                      onClick={e => e.target.select()}
+                      style={{...baseInput, flex:"1 1 280px", fontFamily:"var(--font-mono)", fontSize:"var(--fs-sm)", background:"var(--surface-sunken)"}}
+                    />
+                    <Button
+                      onClick={copyTitle}
+                      style={titleCopyError ? {borderColor:"var(--danger-strong)",color:"var(--danger-strong)"} : titleCopied ? {borderColor:"var(--green-700)",background:"var(--green-200)",color:"var(--green-900)"} : {}}
+                    >
+                      {titleCopied ? "✓ Copied!" : titleCopyError ? "Copy failed" : "Copy title"}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Body — preview + copy */}
+                <div style={{marginBottom:16}}>
+                  <label style={{display:"block",fontSize:"var(--fs-base)",fontWeight:700,color:"var(--text-primary)",marginBottom:6}}>Linear ticket body</label>
+                  <div className="ticket-preview" style={{
+                    background:"var(--surface-sunken)",
+                    borderRadius:"var(--radius-lg)",
+                    border:"1.5px solid var(--border-subtle)",
+                    padding:"1.5rem",
+                    fontFamily:"var(--font-mono)",
+                    fontSize:"var(--fs-sm)",
+                    color:"var(--text-primary)",
+                    whiteSpace:"pre-wrap",
+                    lineHeight:1.75,
+                    maxHeight:440,
+                    overflowY:"auto",
+                    boxShadow:"inset 0 2px 6px rgba(29,67,57,0.04)",
+                  }}>
+                    {buildTicket()}
+                  </div>
+                </div>
+
+                <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
                   <Button variant="primary" onClick={copyTicket} style={copyError ? {background:"var(--danger-strong)",borderColor:"var(--danger-strong)"} : {}}>
-                    {copied ? "✓ Copied!" : copyError ? "Copy failed — select text above" : "Copy to clipboard"}
+                    {copied ? "✓ Body copied!" : copyError ? "Copy failed — select text above" : "Copy body to clipboard"}
                   </Button>
-                  <Button onClick={reset}>Start a new ticket</Button>
+                  <Button variant="ghost" onClick={reset}>Start a new ticket</Button>
                 </div>
 
                 {(() => {
@@ -1806,14 +2015,39 @@
                   if (allShots.length === 0) return null;
                   return (
                     <div style={{marginTop:28}}>
-                      <div style={{fontSize:"var(--fs-base)",fontWeight:900,color:"var(--text-primary)",marginBottom:12}}>📎 Attached screenshots — drag into Linear</div>
-                      {allShots.map((s,i) => (
-                        <div key={i} style={{border:"1.5px solid var(--border-subtle)",borderRadius:"var(--radius-md)",overflow:"hidden",background:"var(--surface-card)",marginBottom:14,boxShadow:"var(--shadow-sm)"}}>
-                          <div style={{padding:"10px 14px",fontSize:"var(--fs-sm)",color:"var(--text-secondary)",borderBottom:"1.5px solid var(--border-subtle)",fontWeight:700,background:"var(--surface-sunken)"}}>{s.label}</div>
-                          <img src={s.dataUrl} alt={s.name} style={{width:"100%",display:"block",maxHeight:300,objectFit:"contain",background:"var(--eggshell)"}}/>
-                          <div style={{padding:"8px 14px",fontSize:"var(--fs-sm)",color:"var(--text-tertiary)"}}>{s.name}</div>
-                        </div>
-                      ))}
+                      <div style={{fontSize:"var(--fs-base)",fontWeight:900,color:"var(--text-primary)",marginBottom:6}}>📎 Attached screenshots</div>
+                      <div style={{fontSize:"var(--fs-sm)",color:"var(--text-secondary)",marginBottom:14,lineHeight:1.55}}>Copy each image one at a time, then paste (⌘V / Ctrl+V) into the Linear description.</div>
+                      {allShots.map((s,i) => {
+                        const status = shotCopied[i];
+                        return (
+                          <div key={i} style={{border:"1.5px solid var(--border-subtle)",borderRadius:"var(--radius-md)",overflow:"hidden",background:"var(--surface-card)",marginBottom:14,boxShadow:"var(--shadow-sm)"}}>
+                            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,padding:"10px 14px",borderBottom:"1.5px solid var(--border-subtle)",background:"var(--surface-sunken)"}}>
+                              <div style={{fontSize:"var(--fs-sm)",color:"var(--text-secondary)",fontWeight:700}}>{s.label}</div>
+                              <button
+                                onClick={() => copyImageToClipboard(s.dataUrl, i)}
+                                aria-label={`Copy ${s.label} to clipboard`}
+                                style={{
+                                  padding:"7px 14px",
+                                  border:`1.5px solid ${status === "failed" ? "var(--danger-strong)" : status === "copied" ? "var(--green-700)" : "var(--border-default)"}`,
+                                  borderRadius:"var(--radius-sm)",
+                                  background: status === "copied" ? "var(--green-200)" : "var(--surface-card)",
+                                  color: status === "failed" ? "var(--danger-strong)" : status === "copied" ? "var(--green-900)" : "var(--text-primary)",
+                                  fontSize:"var(--fs-sm)",
+                                  fontWeight:700,
+                                  cursor:"pointer",
+                                  fontFamily:"var(--font-body)",
+                                  whiteSpace:"nowrap",
+                                  transition:"background-color 0.15s ease, border-color 0.15s ease",
+                                }}
+                              >
+                                {status === "copied" ? "✓ Copied — paste in Linear" : status === "failed" ? "Copy failed" : "Copy image"}
+                              </button>
+                            </div>
+                            <img src={s.dataUrl} alt={s.name} style={{width:"100%",display:"block",maxHeight:300,objectFit:"contain",background:"var(--eggshell)"}}/>
+                            <div style={{padding:"8px 14px",fontSize:"var(--fs-sm)",color:"var(--text-tertiary)"}}>{s.name}</div>
+                          </div>
+                        );
+                      })}
                     </div>
                   );
                 })()}
