@@ -47,10 +47,17 @@
       --golden-hour: #DEB260;
       --solara: #D7A13B;
 
+      /* Funnel tokens — sampled from find.solace.health */
+      --funnel-page: #1C443B;      /* page background green */
+      --funnel-page-deep: #0E211C; /* gradient bottom */
+      --funnel-cta: #132C26;       /* CTA button — darker than page */
+      --funnel-gold: #C99C42;      /* wordmark gold */
+      --funnel-arc: #496A63;       /* decorative arc lines */
+
       /* Semantic — derived from brand for AA contrast */
-      --text-primary: var(--soft-black);
-      --text-secondary: #4a5852;
-      --text-tertiary: #6b7670;
+      --text-primary: #1C443B;
+      --text-secondary: #43594F;
+      --text-tertiary: #64776E;
       --text-muted: #8a948f;
 
       --border-subtle: var(--marble);
@@ -111,7 +118,7 @@
     html, body {
       margin: 0;
       padding: 0;
-      background: var(--surface-page);
+      background: linear-gradient(180deg, var(--funnel-page) 0%, var(--funnel-page) 52%, var(--funnel-page-deep) 100%) fixed;
       font-family: var(--font-body);
       color: var(--text-primary);
       font-size: var(--fs-base);
@@ -120,17 +127,27 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Subtle textured background — Solace warmth without overwhelming */
+    /* Decorative arcs + soft glow — matches the funnel's top treatment */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 85% -10%, rgba(63, 147, 124, 0.06) 0%, transparent 55%),
-        radial-gradient(ellipse 70% 50% at 8% 108%, rgba(215, 161, 59, 0.05) 0%, transparent 55%),
-        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(190, 211, 204, 0.04) 0%, transparent 70%);
+      background: radial-gradient(ellipse 60% 45% at 78% 92%, rgba(42, 94, 81, 0.5) 0%, transparent 60%);
       pointer-events: none;
       z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: -760px;
+      left: -300px;
+      width: 1060px;
+      height: 1060px;
+      border: 1.5px solid rgba(73, 106, 99, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      box-shadow: 1450px -120px 0 -1px rgba(73, 106, 99, 0.35);
     }
 
     /* ============================================================
@@ -144,78 +161,63 @@
     }
     .screen { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-    /* Content card — floats over the eggshell page */
+    /* Content card — floats over the dark green page, funnel-style */
     .card {
-      background: var(--surface-card);
-      border: 1px solid rgba(238, 236, 235, 0.9);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-card);
+      background: var(--true-white);
+      border: none;
+      border-radius: 24px;
+      box-shadow: 0 8px 18px rgba(5, 14, 12, 0.22), 0 30px 70px rgba(5, 14, 12, 0.30);
       padding: clamp(1.5rem, 4vw, 2.5rem);
     }
 
     /* Buttons — variant colors + hover states live here so :hover works */
     .btn {
-      padding: 12px 22px;
-      border-radius: var(--radius-md);
-      font-size: var(--fs-base);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-sm);
       font-family: var(--font-body);
       font-weight: 700;
       letter-spacing: 0.01em;
       cursor: pointer;
-      min-height: 48px;
+      min-height: 38px;
       transition: transform 0.12s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
     }
     .btn:disabled { cursor: not-allowed; opacity: 0.55; }
     .btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
     .btn:not(:disabled):active { transform: translateY(1px); box-shadow: none; }
 
-    .btn-default { background: var(--surface-card); color: var(--text-primary); border: 1.5px solid var(--border-default); }
-    .btn-default:not(:disabled):hover { border-color: var(--green-500); background: var(--green-100); }
+    .btn-default { background: var(--true-white); color: var(--funnel-page); border: 1.5px solid var(--funnel-page); }
+    .btn-default:not(:disabled):hover { background: var(--green-100); }
 
-    .btn-primary { background: var(--green-900); color: var(--eggshell); border: 1.5px solid var(--green-900); }
-    .btn-primary:not(:disabled):hover { background: var(--green-800); border-color: var(--green-800); }
+    .btn-primary { background: var(--funnel-cta); color: var(--true-white); border: 1.5px solid var(--funnel-cta); }
+    .btn-primary:not(:disabled):hover { background: var(--funnel-page); border-color: var(--funnel-page); }
 
-    .btn-secondary { background: var(--green-200); color: var(--green-900); border: 1.5px solid var(--green-400); }
+    .btn-secondary { background: var(--green-200); color: var(--funnel-page); border: 1.5px solid var(--green-400); }
     .btn-secondary:not(:disabled):hover { background: var(--green-100); }
 
     .btn-ghost { background: transparent; color: var(--text-secondary); border: 1.5px solid transparent; }
     .btn-ghost:not(:disabled):hover { background: var(--surface-sunken); box-shadow: none; }
 
-    .btn-danger { background: var(--surface-card); color: var(--danger-strong); border: 1.5px solid var(--danger-border); }
+    .btn-danger { background: var(--true-white); color: var(--danger-strong); border: 1.5px solid var(--danger-border); }
 
-    /* Category tiles — the signature moment */
+    /* Category tiles */
     .cat-tile {
       position: relative;
-      overflow: hidden;
       text-align: left;
-      border-radius: var(--radius-lg);
-      padding: 22px 20px;
-      min-height: 104px;
-      font-size: var(--fs-md);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      min-height: 52px;
+      font-size: var(--fs-base);
       font-weight: 700;
       font-family: var(--font-body);
       cursor: pointer;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       box-shadow: var(--shadow-sm);
-      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+      transition: transform 0.15s ease, box-shadow 0.18s ease;
     }
-    .cat-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .cat-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
     .cat-tile:active { transform: translateY(0); }
-    .cat-tile .ghost {
-      position: absolute;
-      top: -0.28em;
-      right: 0.02em;
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 108px;
-      line-height: 1;
-      opacity: 0.13;
-      pointer-events: none;
-      user-select: none;
-      transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .cat-tile:hover .ghost { opacity: 0.22; transform: translateY(-2px); }
 
     /* Custom checkbox — checklist */
     .check-input {
@@ -907,12 +909,12 @@
     const baseInput = {
       width: "100%",
       padding: "13px 15px",
-      border: "1.5px solid var(--border-default)",
+      border: "1.5px solid var(--funnel-page)",
       borderRadius: "var(--radius-md)",
       fontSize: "var(--fs-base)",
       fontFamily: "var(--font-body)",
       color: "var(--text-primary)",
-      background: "var(--eggshell)",
+      background: "var(--true-white)",
       boxSizing: "border-box",
       outline: "none",
       transition: "border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease",
@@ -1526,7 +1528,7 @@
           fontSize:30,
           fontWeight:600,
           fontFamily:"var(--font-display)",
-          color:"var(--green-900)",
+          color:"var(--funnel-page)",
           lineHeight:1.22,
           margin:"0 0 16px 0",
           letterSpacing:"0.002em",
@@ -1545,91 +1547,65 @@
       return (
         <div style={{position:"relative",minHeight:"100vh",zIndex:1}}>
 
-          {/* Header bar — translucent with gold accent thread */}
+          {/* Header — funnel treatment: gold serif wordmark on the dark page */}
           <header style={{
-            background:"rgba(255, 253, 250, 0.85)",
+            background:"rgba(28, 68, 59, 0.65)",
             backdropFilter:"blur(12px)",
             WebkitBackdropFilter:"blur(12px)",
             padding:"14px 24px",
             position:"sticky",
             top:0,
             zIndex:30,
+            borderBottom:"1px solid rgba(73, 106, 99, 0.35)",
           }}>
-            <div style={{maxWidth:720,margin:"0 auto",display:"flex",alignItems:"center",gap:14}}>
-              {/* Solace logomark — solid green circle with white serif S */}
+            <div style={{maxWidth:720,margin:"0 auto",display:"flex",alignItems:"baseline",gap:14,flexWrap:"wrap"}}>
               <div style={{
-                width:38, height:38,
-                borderRadius:"50%",
-                background:"var(--green-900)",
-                display:"flex",
-                alignItems:"center",
-                justifyContent:"center",
-                color:"var(--true-white)",
-                fontWeight:500,
-                fontSize:25,
+                fontSize:30,
+                fontWeight:600,
+                color:"var(--funnel-gold)",
                 fontFamily:"var(--font-display)",
+                letterSpacing:"0.01em",
                 lineHeight:1,
-                paddingBottom:2, // optical centering — serif S sits slightly low without this
-                flexShrink:0,
-                boxShadow:"0 2px 8px rgba(29,67,57,0.22)",
-              }}>S</div>
-              <div style={{lineHeight:1.15}}>
-                <div style={{
-                  fontSize:21,
-                  fontWeight:600,
-                  color:"var(--green-900)",
-                  fontFamily:"var(--font-display)",
-                  letterSpacing:"0.005em",
-                }}>Solace <span style={{color:"var(--green-500)",fontWeight:500,margin:"0 2px"}}>·</span> CX Ticket Builder</div>
-                <div style={{
-                  fontSize:11,
-                  color:"var(--text-tertiary)",
-                  fontWeight:700,
-                  fontFamily:"var(--font-body)",
-                  textTransform:"uppercase",
-                  letterSpacing:"0.14em",
-                  marginTop:2,
-                }}>Communications · Decision Tree</div>
-              </div>
+              }}>Solace</div>
+              <div style={{
+                fontSize:11,
+                color:"rgba(255, 253, 250, 0.85)",
+                fontWeight:700,
+                fontFamily:"var(--font-body)",
+                textTransform:"uppercase",
+                letterSpacing:"0.16em",
+              }}>CX Ticket Builder · Communications</div>
             </div>
-            {/* Gold accent hairline */}
-            <div aria-hidden="true" style={{
-              position:"absolute",
-              left:0, right:0, bottom:0,
-              height:2,
-              background:"var(--gold-thread)",
-              opacity:0.7,
-            }}/>
           </header>
 
           <main style={{maxWidth:720,margin:"0 auto",padding:"2rem 1.25rem 7.5rem"}}>
 
-            {/* Progress bar */}
-            <div role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Ticket progress" style={{height:5,background:"var(--marble)",borderRadius:3,marginBottom:"1.75rem",overflow:"visible"}}>
+            {/* Progress bar — gold on dark, funnel accent */}
+            <div role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Ticket progress" style={{height:5,background:"rgba(255, 253, 250, 0.16)",borderRadius:3,marginBottom:"1.75rem",overflow:"visible"}}>
               <div style={{
                 height:"100%",
-                background:"linear-gradient(90deg, var(--green-600) 0%, var(--green-800) 100%)",
+                background:"linear-gradient(90deg, var(--chamois) 0%, var(--funnel-gold) 100%)",
                 borderRadius:3,
                 width:`${progress}%`,
                 transition:"width 0.45s cubic-bezier(0.16, 1, 0.3, 1)",
-                boxShadow:"0 0 8px rgba(63, 147, 124, 0.45)",
+                boxShadow:"0 0 10px rgba(201, 156, 66, 0.55)",
               }}/>
             </div>
 
-            {/* PHI warning — fixed bottom banner */}
+            {/* PHI warning — fixed bottom banner, dark glass */}
             <div role="alert" aria-live="polite" style={{
               position:"fixed",
               bottom:0,left:0,right:0,
-              background:"rgba(255, 247, 233, 0.92)",
+              background:"rgba(9, 19, 18, 0.82)",
               backdropFilter:"blur(10px)",
               WebkitBackdropFilter:"blur(10px)",
-              borderTop:"1.5px solid var(--chamois)",
+              borderTop:"1px solid rgba(201, 156, 66, 0.45)",
               padding:"11px 20px",
               textAlign:"center",
               fontSize:"var(--fs-sm)",
-              color:"var(--warning-text)",
+              color:"var(--chamois)",
               fontWeight:700,
-              letterSpacing:"0.02em",
+              letterSpacing:"0.03em",
               zIndex:50,
             }}>
               ⚠️ Do not enter PHI · Reference patients by ID only
@@ -1643,7 +1619,7 @@
                   fontSize:36,
                   fontWeight:600,
                   fontFamily:"var(--font-display)",
-                  color:"var(--green-900)",
+                  color:"var(--funnel-page)",
                   margin:"0 0 8px 0",
                   letterSpacing:"0.002em",
                   lineHeight:1.15,
@@ -1662,7 +1638,6 @@
                           color:cc.text,
                         }}
                       >
-                        <span className="ghost" aria-hidden="true">{c[0]}</span>
                         {c}
                       </button>
                     );
@@ -1681,7 +1656,7 @@
                 {visibleBranches[branchIdx].hint && <Hint>{visibleBranches[branchIdx].hint}</Hint>}
                 <div style={{display:"flex",flexDirection:"column",gap:10}}>
                   {visibleBranches[branchIdx].opts.map(o =>
-                    <Button key={o} onClick={() => pickBranch(visibleBranches[branchIdx].key, o)} style={{textAlign:"left",justifyContent:"flex-start",padding:"16px 20px"}}>{o}</Button>
+                    <Button key={o} onClick={() => pickBranch(visibleBranches[branchIdx].key, o)} style={{textAlign:"left",justifyContent:"flex-start",padding:"11px 14px"}}>{o}</Button>
                   )}
                 </div>
               </section>
@@ -1852,7 +1827,7 @@
               <section key="escalate" className="screen card">
                 <BackBtn />
                 <Pill />
-                <h2 style={{fontSize:30,fontWeight:600,fontFamily:"var(--font-display)",color:"var(--green-900)",margin:"0 0 6px 0",letterSpacing:"0.002em",lineHeight:1.22}}>Ticket details</h2>
+                <h2 style={{fontSize:30,fontWeight:600,fontFamily:"var(--font-display)",color:"var(--funnel-page)",margin:"0 0 6px 0",letterSpacing:"0.002em",lineHeight:1.22}}>Ticket details</h2>
                 <Hint>Fill in what the guide requires for this issue type. All fields optional.</Hint>
 
                 <div style={{marginBottom:20}}>
